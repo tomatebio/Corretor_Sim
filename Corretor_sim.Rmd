@@ -1,0 +1,324 @@
+---
+title: "Relatório do Simulado"
+subtitle: "1 simulado"
+author: "Coordenação"
+date: "05 novembro de 2024"
+output:
+  pdf_document: default
+  word_document: default
+header-includes:
+- \usepackage{pdflscape}
+- \newcommand{\blandscape}{\begin{landscape}}
+- \newcommand{\elandscape}{\end{landscape}}
+---
+
+
+
+```{r,preparatorio, echo=FALSE, message=FALSE}
+
+# Carregar os pacotes necessários, instalar necessário.
+if(!require("knitr")) {install.packages("knitr")}
+if(!require("fsia")) {install.packages("fsia")}
+
+if(!require("xlsx")) {install.packages("xlsx")}
+if(!require("kableExtra")) {install.packages("kableExtra")}
+
+if(!require("tidyverse")) {install.packages("tidyverse")}
+if(!require("ggplot2")) {install.packages("ggplot2")}
+#library("tinytex")
+
+DATA <-"10 de janeiro"
+# Substitua os nomes dos arquivos
+FOLHAS_ESCANEADAS<-c("escaneados_cabecalhos.csv")
+INFO_ALUNOS<-c("Registro_alunos.csv")
+GABARITO<-c("Gabarito.csv")
+DISCIPLINAS<- c("disciplinas.csv")
+
+#identifique as colunas do seu arquivo 
+COL_QUEST_INICIO<-2  # Primeira coluna com quesões
+COL_QUEST_FINAL<- 16 # Ultima coluna com questões
+COL_RM_INICIO<- 17# Primeira coluna com o RM
+COL_RM_FINAL <- 24 # ultima coluna com o RM
+
+
+# Função para atribuir nota/menção, ela recebe o vetor/coluna que tem a soma dos
+# acertos e o numero de questões total para retornar a mencao.
+#  O exemplo abaixo atribui:
+# Menção "I" para quem fizer 5 ou menos, "R" para acertar entre 6ou 7
+# "B" para quem fizer entre 8 até 12 e "MB" para quem fizer 13 ou mais. 
+# 
+# Ela pode ser facilmente ajustada para outros números de acertos e 
+# também para sistema A,B,C,D. Pode ser usada para retornar menção por disciplina. 
+# 
+# 
+Atribuir_nota <- function(totais,questoes) {
+  ifelse(totais <= 5, "I",
+         ifelse(totais <= 7, "R",
+         ifelse(totais <= 12, "B", "MB")))
+}
+
+
+# Se for usar porcentagem de acerto comente a função acima e descomente 
+# as próximas linhas 
+# 
+#Atribuir_nota <- function(totais,questoes){
+#       round((totais/questoes)*100,2)
+#}
+```
+
+
+```{r, lendo, echo=FALSE, message=FALSE}
+# caminho para o arquivo com todas as respostas 
+leitura<-read.formscanner(file= FOLHAS_ESCANEADAS, col.names = NULL,
+                          conc = COL_RM_INICIO : COL_RM_FINAL, # numero de colunas que possui os digitos
+                          id = "RM")
+
+# Resolvendo RMs em branco
+leitura$id<-gsub("NA",NA,leitura$id)
+
+
+
+#adicionando o gabarito
+leitura.chave<-addkey(leitura, keyfile = GABARITO )
+
+
+# adicionando disciplinas
+
+dscp<-read.csv(DISCIPLINAS, sep= ";")
+
+questoes.por.disciplinas<-c()
+
+for(i in 1:dim(dscp)[1]){
+        questoes.por.disciplinas <-c(questoes.por.disciplinas,
+                                     paste0(dscp[i,1],1 : dscp[i,2] ))
+}
+
+
+# Correção das questões
+
+resp01<-resp2binary(obj = leitura.chave, col = COL_QUEST_INICIO : COL_QUEST_FINAL )
+
+#Altera o cabeçalho 
+colnames(resp01)<-c("file",questoes.por.disciplinas,"id")
+
+
+
+
+# Soma por disciplina 
+
+disciplinas<-dscp[,1]
+for (disciplina in disciplinas) {
+                resp01 <- resp01 %>%
+                        rowwise() %>%
+                        mutate(!!paste0(disciplina, ".") := sum(c_across(starts_with(disciplina)), na.rm = TRUE))
+}       
+
+
+# Selecionando apenas os totais
+acertos.por.disciplina<-resp01 %>%
+                          select(starts_with("id"):last_col())
+
+# Soma dos acertos 
+acertos.disc.total<- acertos.por.disciplina  %>%
+             rowwise() %>%
+             mutate(Total = sum(c_across(-id)))
+
+
+
+
+
+
+# Atribuição de menção
+Mencao<- Atribuir_nota(acertos.disc.total$Total,
+                       length(questoes.por.disciplinas))
+
+# Juntando numero de acertos por disciplina com a menção  e arrumando os cabecalhos
+resumo.acertos<-cbind(acertos.disc.total,Mencao)
+colnames(resumo.acertos)<-sub("id","RM",colnames(resumo.acertos))
+
+#salvando os dados
+write.csv(resumo.acertos,row.names=F,"resumo.acertos.csv")
+write.csv(resp01, row.names=F,"Calculo de acertos.csv")
+
+
+
+# lendo o banco de dados dos alunos
+alunos<-read.csv2(INFO_ALUNOS, colClasses="character")
+
+
+alunos.order<-alunos[order(alunos$Nome),]
+
+
+resumo.acertos$RM<-as.character(resumo.acertos$RM)
+com.nomes<-merge(alunos.order,resumo.acertos, by="RM",all=T)
+
+
+
+nome_turma<-unique(com.nomes$Turma)
+
+
+
+for(idx in nome_turma){
+  
+  write.xlsx(com.nomes[com.nomes$Turma == idx, c(-3,-5:-7)],
+             file="Resultado_professores.xls",
+             sheetName = idx,
+             append=T, row.names=F)
+}
+
+write.csv(com.nomes, "Para_Mala_direta.csv")
+
+
+
+
+
+
+# estatistica por item
+ist.1<-item.stat(leitura.chave, col= COL_QUEST_INICIO: COL_QUEST_FINAL)
+
+
+
+ist.ques<-cbind(questoes.por.disciplinas,ist.1)
+
+```
+
+
+ Em `r DATA` foi realizado um simulado na escola. As repostas foram coletadas em folhas e lidas em scanner, processadas usando o software Formscanner. Os dados foram tabulados automaticamente usando o software R. 
+
+## Participantes
+
+```{r,participantes, echo=FALSE}
+total_alunos<-dim(alunos)[1]
+
+contagem<-table(com.nomes$Turma,is.na(com.nomes$Total))
+
+total_presentes<-sum(contagem[,1])
+
+porcentagem <- round((total_presentes/total_alunos)*100,2)
+
+```
+ 
+ Dos `r total_alunos` matriculados `r total_presentes` compareceram no simulado (`r porcentagem` % de presença)
+ 
+ 
+```{r, Detalhe_participantes, echo =FALSE}
+tmp <-data.frame( Turma= row.names(contagem),
+                  presentes =as.vector(contagem[,1]),
+                  ausentes = as.vector(contagem[,2])
+        
+)
+
+
+kable(tmp, align= "c",
+      caption="Número de participantes por turma")
+
+```
+ 
+
+\newpage
+
+ 
+```{r,gabarito, echo=FALSE, results='asis',size=10 }
+gab<-read.csv2(GABARITO)
+
+gdf<-cbind(questoes.por.disciplinas,data.frame(t(gab)))
+colnames(gdf)<-c("Disciplina", "Resposta")
+kable(gdf, caption="Gabarito do simulado")
+```
+\newpage
+
+
+\blandscape
+
+## Estatísticas 
+
+### Por questão
+
+```{r plot1, echo=FALSE, fig.height=6, fig.width=9, message=FALSE, fig.path='figures/'}
+
+ggplot(ist.ques, aes(x= questoes.por.disciplinas, y= perc )) +
+  geom_point() +
+  ggtitle("Percentual de acertos por questão")+
+  xlab("Questão") +
+  ylab("Percentual de acerto") +theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+```
+
+### Por turma
+
+```{r,turma2, echo= FALSE,message=FALSE, warning = FALSE, fig.width=9, fig.height=6,fig.path='figures/'}
+
+ggplot(com.nomes, aes(x= Turma, y= Total, fill = Curso ))+             
+         geom_boxplot() +
+         ggtitle("Distribuição das Pontuações por turma")+
+         ylab("Pontos")+
+         theme(
+             axis.text.x = element_text(angle = 90,
+                                      vjust = 0.5,
+                                      hjust = 1)
+                        )
+
+
+
+```
+
+
+
+
+### Por disciplina
+
+``` {R, por disciplina,echo= FALSE,message=FALSE, warning = FALSE, fig.width=9, fig.height=6,fig.path='figures/'}
+
+estatistica.disciplina<-com.nomes %>%
+        select(Turma,contains(disciplinas)) %>%
+        pivot_longer(
+                cols = ends_with("."),   
+                names_to = "disciplina",    
+                values_to = "acertos",   
+                values_drop_na = TRUE         
+                    )  %>%
+        group_by(Turma, disciplina) %>%  # Agrupando por Turma e disciplina
+                        summarise(
+                                 media_acertos = mean(acertos, na.rm = TRUE),
+                                 min_acertos = min(acertos, na.rm = TRUE),
+                                 max_acertos = max(acertos, na.rm = TRUE),
+                                 .groups = 'drop')
+        
+        
+ggplot(estatistica.disciplina,aes( x = Turma, y= media_acertos)) +
+      geom_point(color = "green") +  
+      geom_errorbar(aes(ymin = min_acertos, ymax = max_acertos), width = 0.2) +  # Barras de erro
+  facet_wrap(. ~ disciplina) +
+  theme(
+    axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)
+  ) +
+  labs(y = "Acertos", title = "Média com Mínimo e Máximo dos Acertos por Turma e Disciplina")
+
+```
+
+
+\newpage
+
+## Por estudante
+```{r,resultados, echo=FALSE, results='asis',size=10 }
+
+
+nome_turma<-nome_turma[order(nome_turma)]
+
+resultado<-select(com.nomes,RM,Nome,Turma,contains(disciplinas),Total,Mencao)
+
+for(idx in nome_turma){
+  print(kable(resultado[resultado$Turma == idx, -3],
+              align="c", format="simple",row.names=FALSE,
+              caption= idx)
+   ) 
+   cat("\n\n\\pagebreak\n")
+     }
+```
+
+\elandscape
+
+\newpage
+
+Relatório produzido automaticamente usando script **Corretor_Sim** disponível em www.github.com/tomatebio.
