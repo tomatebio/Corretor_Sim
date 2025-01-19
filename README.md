@@ -6,8 +6,11 @@ Este é um script  que automatiza a correção de testes e simulados usando folh
 ## Tabela de conteúdos
 
 -[Preparação das provas](#preparação das provas)
+
 -[Instalação](#instalação)
+
 -[Configuração](#configuração)
+
 -[Exemplo de uso](#Exemplo de uso)
 
 
@@ -16,13 +19,13 @@ Este é um script  que automatiza a correção de testes e simulados usando folh
    Este script foi elaborado usando o softaware livre Formscanner 1.1.3 mas pode ser adaptado para qualquer outro *OMR Optical Mark Reader*. O softaware pode ser baixado do sote do projeto [https://sites.google.com/site/examgrader/formscanner]( https://sites.google.com/site/examgrader/formscanner).
     Os tutoriais sobre como usar o softaware estão disponíveis em video pelo [próprio desenvolvedor em inglês] (https://youtube.com/playlist?list=PLoXzbRApmhNlCKwpSqtNt5MiwFVvx-u-k&si=lC9vLSM275NY6LLL) 
 
-    As folhas de resposta podem ser customizadas de várias maneiras diferentes. O aquivo  bubleform_angular.xlsx contem diversos exemplos que podem ser alterados. O tutorial em video [forms](https://youtu.be/MnLkv3-QqFs?si=oc4-OSKw4MYJv8IE) mostra como usar. Ambos materias feitos pelos desenvolvedores. 
+As folhas de resposta podem ser customizadas de várias maneiras diferentes. O aquivo  bubleform_angular.xlsx contem diversos exemplos que podem ser alterados. O tutorial em video [forms](https://youtu.be/MnLkv3-QqFs?si=oc4-OSKw4MYJv8IE) mostra como usar. Ambos materias feitos pelos desenvolvedores. 
 
-    Então, basta diagramar a folha de respostas com o número de questões/alternativas que vai usar, imprimir e distribuir no dia da prova. 
+Então, basta diagramar a folha de respostas com o número de questões/alternativas que vai usar, imprimir e distribuir no dia da prova. 
 
 ### Digitalização das respostas
 
-    As folhas de respostas devem ser escaneadas e convertidas em aquivos de imagem jpg individualmente. Exixtem milhares de formas de fazer isso dependendo do equipamento que você tem à disposição. 
+As folhas de respostas devem ser escaneadas e convertidas em aquivos de imagem jpg individualmente. Exixtem milhares de formas de fazer isso dependendo do equipamento que você tem à disposição. 
 
 
 ## Instalação
@@ -119,7 +122,8 @@ Por fim, é necessário configurar a função de atribuição de nota. A funçã
 
 No exemplo abaixo quem acerta 5 ou menos recebe "I", quem acertar mais que 5  e até 7 recebe "R". Quem acertar entre 8 e 12 recebe "B" e quem fizer mais que 12 recebe "MB"
 
-ESTA FUNÇÃO precisa ser atualizada toda vez que a quantidade de questões, criterios mudarem entre um simulado e outro.
+    Esta função precisa ser atualizada toda vez que a quantidade 
+    de questões, criterios mudarem entre um simulado e outro.
 
 ```R
 44 # Função para atribuir nota/menção, ela recebe o vetor/coluna que tem a soma dos                          
@@ -142,6 +146,31 @@ ESTA FUNÇÃO precisa ser atualizada toda vez que a quantidade de questões, cri
 ```
 
 Mais abaixo (linhas 64-66) existe uma função alternativa usando porcentagem de acertos como nota final. Para usá-la é necessário comentar as linhas 54-58 e descomentar as linhas 64-66.
+
+### Arquivos
+
+    Todos os arquivos são .csv usando o ";" como separador de campos
+    e aspas para separar texto.
+
+    O R é "case sensitive" então há diferença entre "TURMA", "Turma"
+    e "turma". Preste atenção para não ter problemas com isso, mantenha a consistência.
+
+São necessários 4 arquivos diferentes para o script funcionar. Vou referenciar pelo nome dado no script.
+
+
+**FOLHAS_ESCANEADAS**: É a saida do FormScanner modificada com a respostas dos alunos. É necessário alterar o cabeçalho das colunas que deve ficar: "arquivo"; "Q1"; "Q2"; "Q3"; ...."RM";"RM1";"RM2";"RM3";"RM4";"RM5". Onde, Q1, Q2 são os numeros das questões e RM para cada digito do registro da matricula. No exemplo, é o arquivos "escaneados_cabeçalho.csv"
+
+**INFO_ALUNOS**: Contem as informações dos alunos em uma única planilha. Deve conter, obrigatóriamente, as colunas: "RM", com os registro de matricula; "Turma", com identificador curto da turma  como "1 A Mec"; "Curso", identificador do curso como "Edificações", "Mecânica", "Alimentos noturno"; "Nome", nome completo do estudante. Pode conter outros campos como "email", "telefone" etc. 
+
+Nenhum dado das colunas obrigátorias pode estar em branco.   Se não houver cursos diferentes você pode usar para periodos "manhã", "tarde" ou colocar "Ensino Médio" para todos. Mas não pode alterar o nome da coluna. No exemplo é "Registro_alunos.csv"
+
+**GABARITO**: Possue as repostas corretas para as questões. Possue uma coluna para cada questão sendo a primeira linha com o identificador da questão: "Q1" , "Q2"... e na segunda linha a opção correta: "A", "B", etc. Caso precise cancelar uma questão coloque "X" como resposta e a questão não será somada.  
+
+**DISCIPLINAS**: Contem a divisão da prova em diciplinas. A primeira coluna tem o cabeçcalho "disciplina" e traz a sigla da disciplina na ordem que aparece na prova. A segunda coluna tem o cabeçalho "numero" e traz a quantidade de questões de cada disciplina na prova. No exemplo é o arquivo "disciplinas.csv"
+
+
+
+  
 ## Carregar o Template
 
 1. Na aba **Template**, clique em **Load Saved Template** e localize o arquivo do template que você salvou.
