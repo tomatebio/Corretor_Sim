@@ -1,7 +1,7 @@
 # Corretor_Sim
 
 ## Descrição
-Este é um script  que automatiza a correção de testes e simulados usando folhas de respostas escaneadas.  Usa software Formscanner, linguagem R e Rstudio.  O script gera vários arquivos de resultado para diversos fins além de um relatório em PDF para avaliação pela coordenação da escola. 
+Este é um script que automatiza a correção de testes e simulados usando folhas de respostas escaneadas. Utiliza o software Formscanner, a linguagem R e o RStudio. O script gera vários arquivos de resultado para diversos fins, além de um relatório em PDF para avaliação pela coordenação da escola. 
 
 ## Tabela de conteúdos
 
@@ -16,12 +16,13 @@ Este é um script  que automatiza a correção de testes e simulados usando folh
 
 ## Preparação das provas
 
-   Este script foi elaborado usando o software livre Formscanner 1.1.3 mas pode ser adaptado para qualquer outro *OMR Optical Mark Reader*. O software pode ser baixado do sote do projeto [https://sites.google.com/site/examgrader/formscanner]( https://sites.google.com/site/examgrader/formscanner).
+  Este script foi elaborado usando o software livre Formscanner 1.1.3 mas pode ser adaptado para qualquer outro *OMR Optical Mark Reader*. O software pode ser baixado do sote do projeto [https://sites.google.com/site/examgrader/formscanner]( https://sites.google.com/site/examgrader/formscanner).
     Os tutoriais sobre como usar o software estão disponíveis em vídeo pelo [próprio desenvolvedor em inglês] (https://youtube.com/playlist?list=PLoXzbRApmhNlCKwpSqtNt5MiwFVvx-u-k&si=lC9vLSM275NY6LLL) 
 
 As folhas de resposta podem ser customizadas de várias maneiras diferentes. O aquivo  bubleform_angular.xlsx contem diversos exemplos que podem ser alterados. O tutorial em vídeo [forms](https://youtu.be/MnLkv3-QqFs?si=oc4-OSKw4MYJv8IE) mostra como usar. Ambos materiais feitos pelos desenvolvedores. 
 
 Então, basta diagramar a folha de respostas com o número de questões/alternativas que vai usar, imprimir e distribuir no dia da prova. 
+
 
 ### Digitalização das respostas
 
@@ -185,10 +186,10 @@ Nenhum dado das colunas obrigatórias pode estar em branco.   Se não houver cur
 
 ## Resultados
 
-O Script deve, em condições normais, tabular os dados de repostas dos alunos, referenciar as respostas com os dados dos alunos. Gerar estatisticas  e gráficos. Além disso, deve gerar os seguintes arquivos dentro da pasta de trabalho:
+O Script deve, em condições normais, tabular os dados de repostas dos alunos, referenciar as respostas com os dados dos alunos. Gerar estatísticas  e gráficos. Além disso, deve gerar os seguintes arquivos dentro da pasta de trabalho:
    - O relatório em PDF com todos os dados do simulado. Por padrão o nome do relatório é "Corretor_sim.pdf".
    - O arquivo "Resumo de acertos.csv" contem o RM, número de acertos em cada disciplina e a Menção final em uma única planilha. Sendo útil para integração com outros sistemas.
-   - O arquivo "Calculo de acertos.csv" é a versão expandida do "Resumo". Contem o nome do arquivo escaneado, o acerto ou erro em cada questão além dos dados que estão no "Resumo". Útil para verificar inconsistencias.
+   - O arquivo "Calculo de acertos.csv" é a versão expandida do "Resumo". Contem o nome do arquivo escaneado, o acerto ou erro em cada questão além dos dados que estão no "Resumo". Útil para verificar inconsistências.
 
    - O arquivo "Resultado_ professores.xls" contem o RM, turma, Nome, número de acertos por disciplina e menção dos alunos organizados por turma em abas.
    - O arquivo "Para_Mala_direta.csv" está organizado para a divulgação dos resultados diretamente aos alunos ou responsáveis. Além dos dados que estão em outros arquivos este arquivo contem todos os outros dados que estavam em INFO_ALUNOS como, por exemplo, o email de cada um. 
@@ -197,7 +198,7 @@ O Script deve, em condições normais, tabular os dados de repostas dos alunos, 
 
 ## Exemplo de uso
 
-Na pasta *Exemplo* contem os arquivos de um simulado pequeno com dados ficticios para usar. As folhas de resposta escaneadas fazem parte do conjunto de teste do proprio FormScanner e os dados dos alunos, gabaritos e disciplinas foram inventados. 
+Na pasta *Exemplo* contem os arquivos de um simulado pequeno com dados fictícios para usar. As folhas de resposta escaneadas fazem parte do conjunto de teste do próprio FormScanner e os dados dos alunos, gabaritos e disciplinas foram inventados. 
 
   
 ## To do list
