@@ -31,7 +31,7 @@ DATA <-"10 de janeiro"
 # Substitua os nomes dos arquivos
 FOLHAS_ESCANEADAS<-c("escaneados_cabecalhos.csv")
 INFO_ALUNOS<-c("Registro_alunos.csv")
-GABARITO<-c("Gabarito.csv")
+GABARITO<-c("gabarito.csv")
 DISCIPLINAS<- c("disciplinas.csv")
 
 #identifique as colunas do seu arquivo 
