@@ -11,6 +11,8 @@ Este é um script que automatiza a correção de testes e simulados usando folha
 
 -[Configuração](#configuração)
 
+-[Como usar](#como_rodar)
+
 -[Exemplo de uso](#exemplo_de_uso)
 
 
@@ -196,11 +198,20 @@ O Script deve, em condições normais, tabular os dados de repostas dos alunos, 
 
     Os arquivos foram assim organizados para evitar a divulgação de dados fora do contexto essencialmente necessário. 
 
+
+## Como usar
+
+1 Colocar todos os aquivos necessários na mesma pasta que o script Corretor_sim;
+2 Configurar os arquivos como mencionado acima;
+3 Abra o script com dois cliques no Rstudio;
+4 Encontre o icone azul do novelo, clique na seta para baixo e escolha "knit to PDF". 
+ 
 ## Exemplo de uso
 
 Na pasta *Exemplo* contem os arquivos de um simulado pequeno com dados fictícios para usar. As folhas de resposta escaneadas fazem parte do conjunto de teste do próprio FormScanner e os dados dos alunos, gabaritos e disciplinas foram inventados. 
 
-  
+
+
 ## To do list
   - Organizar pasta de entrada e saída
 
