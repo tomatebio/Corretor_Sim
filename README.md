@@ -217,3 +217,14 @@ Na pasta *Exemplo* contem os arquivos de um simulado pequeno com dados fictício
   - Organizar pasta de entrada e saída
 
 
+## Referências
+
+ Michela Battauz (2017). fsia: Import and Analysis of OMR Data from
+  FormScanner. R package version 1.1.1.
+  https://CRAN.R-project.org/package=fsia
+
+  R Core Team (2021). R: A language and environment for statistical
+  computing. R Foundation for Statistical Computing, Vienna, Austria.
+  URL https://www.R-project.org/.
+
+
